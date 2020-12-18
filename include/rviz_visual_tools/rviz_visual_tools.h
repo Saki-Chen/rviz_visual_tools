@@ -752,10 +752,11 @@ public:
    * \return true on success
    */
   bool publishWireframeRectangle(const Eigen::Isometry3d& pose, double height, double width, colors color = BLUE,
-                                 scales scale = MEDIUM, std::size_t id = 0);
+                                 scales scale = MEDIUM, const std::string& ns = "Wireframe Rectangle", std::size_t id = 0);
   bool publishWireframeRectangle(const Eigen::Isometry3d& pose, const Eigen::Vector3d& p1_in,
                                  const Eigen::Vector3d& p2_in, const Eigen::Vector3d& p3_in,
-                                 const Eigen::Vector3d& p4_in, colors color, scales scale);
+                                 const Eigen::Vector3d& p4_in, colors color = BLUE,
+                                 scales scale = MEDIUM, const std::string& ns = "Wireframe Rectangle", std::size_t id = 0);
   /**
    * \brief Display a marker of a coordinate frame axis with a text label describing it
    * \param pose - the location to publish the marker with respect to the base frame
@@ -878,7 +879,7 @@ public:
    * \param radius - width of cylinders
    * \return true on success
    */
-  bool publishGraph(const graph_msgs::GeometryGraph& graph, colors color, double radius);
+  bool publishGraph(const graph_msgs::GeometryGraph& graph, colors color, double radius, const std::string& ns = "Graph");
 
   /**
    * \brief Display a marker of a text
@@ -890,13 +891,13 @@ public:
    * \return true on success
    */
   bool publishText(const Eigen::Isometry3d& pose, const std::string& text, colors color = WHITE, scales scale = MEDIUM,
-                   bool static_id = true);
+                   bool static_id = true, const std::string& ns = "Text");
   bool publishText(const Eigen::Isometry3d& pose, const std::string& text, colors color,
                    const geometry_msgs::Vector3 scale, bool static_id = true);
   bool publishText(const geometry_msgs::Pose& pose, const std::string& text, colors color = WHITE,
                    scales scale = MEDIUM, bool static_id = true);
   bool publishText(const geometry_msgs::Pose& pose, const std::string& text, colors color,
-                   const geometry_msgs::Vector3 scale, bool static_id = true);
+                   const geometry_msgs::Vector3 scale, bool static_id = true, const std::string& ns = "Text");
 
   /**
    * \brief Convert an Eigen pose to a geometry_msg pose

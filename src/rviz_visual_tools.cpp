@@ -1676,7 +1676,7 @@ bool RvizVisualTools::publishMesh(const geometry_msgs::Pose& pose, const shape_m
   return publishMarker(triangle_marker_);
 }
 
-bool RvizVisualTools::publishGraph(const graph_msgs::GeometryGraph& graph, colors color, double radius)
+bool RvizVisualTools::publishGraph(const graph_msgs::GeometryGraph& graph, colors color, double radius, const std::string& ns)
 {
   // Track which pairs of nodes we've already connected since graph is
   // bi-directional
@@ -1700,7 +1700,7 @@ bool RvizVisualTools::publishGraph(const graph_msgs::GeometryGraph& graph, color
         a = convertPoint(graph.nodes[i]);
         b = convertPoint(graph.nodes[graph.edges[i].node_ids[j]]);
 
-        publishCylinder(a, b, color, radius);
+        publishCylinder(a, b, color, radius, ns);
       }
     }
   }
@@ -2261,7 +2261,7 @@ bool RvizVisualTools::publishWireframeCuboid(const Eigen::Isometry3d& pose, cons
 }
 
 bool RvizVisualTools::publishWireframeRectangle(const Eigen::Isometry3d& pose, double height, double width,
-                                                colors color, scales scale, std::size_t id)
+                                                colors color, scales scale, const std::string& ns, std::size_t id)
 {
   if (id == 0)
   {  // Provide a new id every call to this function
@@ -2285,7 +2285,7 @@ bool RvizVisualTools::publishWireframeRectangle(const Eigen::Isometry3d& pose, d
 
   // Setup marker
   line_list_marker_.header.stamp = ros::Time();
-  line_list_marker_.ns = "Wireframe Rectangle";
+  line_list_marker_.ns = ns;
 
   std_msgs::ColorRGBA this_color = getColor(color);
   line_list_marker_.scale = getScale(scale, 0.25);
@@ -2323,7 +2323,8 @@ bool RvizVisualTools::publishWireframeRectangle(const Eigen::Isometry3d& pose, d
 
 bool RvizVisualTools::publishWireframeRectangle(const Eigen::Isometry3d& pose, const Eigen::Vector3d& p1_in,
                                                 const Eigen::Vector3d& p2_in, const Eigen::Vector3d& p3_in,
-                                                const Eigen::Vector3d& p4_in, colors color, scales scale)
+                                                const Eigen::Vector3d& p4_in, colors color,
+                                                scales scale, const std::string& ns, std::size_t id)
 {
   Eigen::Vector3d p1;
   Eigen::Vector3d p2;
@@ -2338,10 +2339,16 @@ bool RvizVisualTools::publishWireframeRectangle(const Eigen::Isometry3d& pose, c
 
   // Setup marker
   line_list_marker_.header.stamp = ros::Time();
-  line_list_marker_.ns = "Wireframe Rectangle";
+  line_list_marker_.ns = ns;
 
-  // Provide a new id every call to this function
-  line_list_marker_.id++;
+  if (id == 0)
+  {  // Provide a new id every call to this function
+    line_list_marker_.id++;
+  }
+  else
+  {  // allow marker to be overwritten
+    line_list_marker_.id = id;
+  }
 
   std_msgs::ColorRGBA this_color = getColor(color);
   line_list_marker_.scale = getScale(scale, 0.25);
@@ -2482,9 +2489,9 @@ bool RvizVisualTools::publishSpheres(const std::vector<geometry_msgs::Point>& po
 }
 
 bool RvizVisualTools::publishText(const Eigen::Isometry3d& pose, const std::string& text, colors color, scales scale,
-                                  bool static_id)
+                                  bool static_id, const std::string& ns)
 {
-  return publishText(convertPose(pose), text, color, getScale(scale), static_id);
+  return publishText(convertPose(pose), text, color, getScale(scale), static_id, ns);
 }
 
 bool RvizVisualTools::publishText(const Eigen::Isometry3d& pose, const std::string& text, colors color,
@@ -2500,7 +2507,7 @@ bool RvizVisualTools::publishText(const geometry_msgs::Pose& pose, const std::st
 }
 
 bool RvizVisualTools::publishText(const geometry_msgs::Pose& pose, const std::string& text, colors color,
-                                  const geometry_msgs::Vector3 scale, bool static_id)
+                                  const geometry_msgs::Vector3 scale, bool static_id, const std::string& ns)
 {
   // Save the ID if this is a static ID or keep incrementing ID if not static
   double temp_id = text_marker_.id;
@@ -2521,6 +2528,7 @@ bool RvizVisualTools::publishText(const geometry_msgs::Pose& pose, const std::st
   text_marker_.scale = scale;
   text_marker_.scale.x = 0;
   text_marker_.scale.y = 0;
+  text_marker_.ns = ns;
   // Helper for publishing rviz markers
   publishMarker(text_marker_);
 
